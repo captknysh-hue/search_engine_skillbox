@@ -27,4 +27,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Ignore service files CLion / JetBrains
+*.idea/
+
 # End of https://www.toptal.com/developers/gitignore/api/windows
