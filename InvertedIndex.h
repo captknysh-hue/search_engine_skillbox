@@ -1,12 +1,11 @@
 #ifndef SEARCH_ENGINE_INVERTEDINDEX_H
 #define SEARCH_ENGINE_INVERTEDINDEX_H
 
-#pragma once
 #include <string>
 #include <vector>
 #include <map>
-#include <sstream>
-#include <algorithm>
+#include <mutex>
+#include <thread>
 
 struct Entry {
     size_t doc_id;
@@ -28,6 +27,7 @@ public:
 private:
     std::vector<std::string> docs;
     std::map<std::string, std::vector<Entry>> freq_dictionary;
+    std::mutex freq_mutex;
 };
 
 
