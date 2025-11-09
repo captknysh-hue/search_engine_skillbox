@@ -22,7 +22,7 @@ public:
 
     void UpdateDocumentBase(const std::vector<std::string>& input_docs);
 
-    std::vector<Entry> GetWordCount(const std::string& word) const;
+    std::vector<Entry> GetWordCount(const std::string& word);
 
 private:
     std::vector<std::string> docs;
