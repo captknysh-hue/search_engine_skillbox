@@ -1,59 +1,46 @@
 #include "SearchServer.h"
-#include <map>
-#include <set>
 #include <sstream>
 #include <algorithm>
-#include <cmath>
+#include <unordered_map>
 
-SearchServer::SearchServer(InvertedIndex &idx) : index(idx) {}
-
-std::vector<std::vector<RelativeIndex> > SearchServer::search(
-    const std::vector<std::string> &queries_input) {
+std::vector<std::vector<RelativeIndex>> SearchServer::search(
+    const std::vector<std::string>& queries_input) {
 
     std::vector<std::vector<RelativeIndex>> result;
     for (const auto& query : queries_input) {
-        std::map<size_t, size_t> doc_absolute_relevance;
+        std::unordered_map<size_t, float> abs_relevance;
         std::istringstream iss(query);
-        std::set<std::string> unique_words;
         std::string word;
 
         while (iss >> word) {
-            unique_words.insert(word);
-        }
-
-        for (const auto& w : unique_words) {
-            for (const auto& entry : index.GetWordCount(w)) {
-                doc_absolute_relevance[entry.doc_id] += entry.count;
+            auto entries = index.GetWordCount(word);
+            for (auto& e : entries) {
+                abs_relevance[e.doc_id] += e.count;
             }
         }
 
-        if (doc_absolute_relevance.empty()) {
+        if (abs_relevance.empty()) {
             result.push_back({});
             continue;
         }
 
-        size_t max_abs_relevance = 0;
-        for (auto& [doc_id, abs_rel] : doc_absolute_relevance)
-            if (abs_rel > max_abs_relevance) max_abs_relevance = abs_rel;
+        float max_relevance = 0.0f;
+        for (const auto& [_, value] : abs_relevance)
+            max_relevance = std::max(max_relevance, value);
 
-        std::vector<RelativeIndex> rel_result;
-        for (auto& [doc_id, abs_rel] : doc_absolute_relevance) {
-            RelativeIndex rel{};
-            rel.doc_id = doc_id;
-            rel.rank = static_cast<float>(abs_rel) / max_abs_relevance;
-            rel_result.push_back(rel);
+        std::vector<RelativeIndex> relVec;
+        for (const auto& [id, value] : abs_relevance) {
+            relVec.push_back({id, value / max_releevance});
         }
 
-        std::sort(rel_result.begin(), rel_result.end(),
+        std::sort(relVec.begin(), relVec.end(),
             [](const RelativeIndex& a, const RelativeIndex& b) {
-                if (fabs(a.rank - b.rank) > 1e-6)
-                    return a.rank > b.rank;
-                return a.doc_id < b.doc_id;
+                return a.rank > b.rank;
             });
 
-        if (rel_result.size() > 5)
-            rel_result.resize(5);
-        result.push_back(rel_result);
+        if (relVec.size() > 5)
+            relVec.resize(5);
+        result.push_back(relVec);
     }
     return result;
 }
