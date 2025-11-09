@@ -1,30 +1,39 @@
 #include "InvertedIndex.h"
+#include <unordered_map>
+#include <sstream>
+#include <algorithm>
 
 void InvertedIndex::UpdateDocumentBase(const std::vector<std::string>& input_docs) {
     docs = input_docs;
     freq_dictionary.clear();
 
-    for (size_t doc_id = 0; doc_id < docs.size(); doc_id++) {
-        std::istringstream iss(docs[doc_id]);
-        std::map<std::string, size_t> word_count;
-        std::string word;
+    std::vector<std::thread> threads;
 
-        while (iss >> word) {
-            std::transform(word.begin(), word.end(), word.begin(), ::tolower);
-            ++word_count[word];
-        }
+    for (size_t doc_id = 0; doc_id < docs.size(); ++doc_id) {
+        threads.emplace_back([this, doc_id]() {
+            std::unordered_map<std::string, size_t> local_freq;
+            std::istringstream iss(docs[doc_id]);
+            std::string word;
 
-        for (auto& [word, count] : word_count) {
-            freq_dictionary[word].push_back({doc_id, count});
-        }
+            while (iss >> word) {
+                std::transform(word.begin(), word.end(), word.begin(), ::tolower);
+                ++local_freq[word];
+            }
+            std::lock_guard<std::mutex> lock(freq_mutex);
+            for (const auto& [w, count] : local_freq) {
+                freq_dictionary[w].push_back({doc_id, count});
+            }
+        });
     }
-}
-std::vector<Entry> InvertedIndex::GetWordCount(const std::string& word) const {
-    std::string lower = word;
-    std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
 
-    auto it = freq_dictionary.find(lower);
-    if (it != freq_dictionary.end()) {
+    for (auto& t : threads)
+        if (t.joinable())
+            t.join();
+}
+
+std::vector<Entry> InvertedIndex::GetWordCount(const std::string& word) {
+    std::lock_guard<std::mutex> lock(freq_mutex);
+    if (auto it = freq_dictionary.find(word); it != freq_dictionary.end()) {
         return it->second;
     }
     return {};
