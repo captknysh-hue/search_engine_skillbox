@@ -30,7 +30,7 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(
 
         std::vector<RelativeIndex> relVec;
         for (const auto& [id, value] : abs_relevance) {
-            relVec.push_back({id, value / max_releevance});
+            relVec.push_back({id, value / max_relevance});
         }
 
         std::sort(relVec.begin(), relVec.end(),
