@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../InvertedIndex.h"
+#include "../include/InvertedIndex.h"
 using namespace std;
 
 void TestInvertedIndexFunctionality(

@@ -1,11 +1,11 @@
-#include "ConverterJSON.h"
+#include "../include/ConverterJSON.h"
 #include <fstream>
 #include <iostream>
 
 ConverterJSON::ConverterJSON() = default;
 
 std::vector<std::string> ConverterJSON::GetTextDocuments() {
-    std::ifstream file("confirg.json");
+    std::ifstream file("config/config.json");
     json config;
     file >> config;
     file.close();
@@ -24,7 +24,7 @@ std::vector<std::string> ConverterJSON::GetTextDocuments() {
 }
 
 int ConverterJSON::GetResponseLimit() {
-    std::ifstream file("config.json");
+    std::ifstream file("config/config.json");
     json config;
     file >> config;
     file.close();
@@ -32,7 +32,7 @@ int ConverterJSON::GetResponseLimit() {
 }
 
 std::vector<std::string> ConverterJSON::GetRequests() {
-    std::ifstream file("requests.json");
+    std::ifstream file("config/requests.json");
     json requests;
     file >> requests;
     file.close();
@@ -68,7 +68,7 @@ void ConverterJSON::PutAnswers(const std::vector<std::vector<std::pair<int, floa
         result["answers"][key] = requestResult;
     }
 
-    std::ofstream out("answers.json");
+    std::ofstream out("config/answers.json");
     out << std::setw(4) << result;
     out.close();
 }

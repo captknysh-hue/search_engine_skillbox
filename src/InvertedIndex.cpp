@@ -1,4 +1,4 @@
-#include "InvertedIndex.h"
+#include "../include/InvertedIndex.h"
 #include <unordered_map>
 #include <sstream>
 #include <algorithm>
