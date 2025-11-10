@@ -1,27 +1,25 @@
 cmake_minimum_required(VERSION 3.16)
-project(search_engine)
+project(search_engine_skillbox)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(TEST_SOURCES
-        tests/test_main.cpp
-        tests/test_inverted_index.cpp
-        tests/test_search_server.cpp
-        src/ConverterJSON.cpp
-        src/InvertedIndex.cpp
-        src/SearchServer.cpp
-        src/main.cpp
+        test_main.cpp
+        test_inverted_index.cpp
+        test_search_server.cpp
 )
 
 add_executable(search_engine_tests ${TEST_SOURCES})
 
-target_link_libraries(search_engine_tests PRIVATE gtest_main)
+target_link_libraries(search_engine_tests PRIVATE
+        search_engine_lib
+        gtest_main
+)
 
 target_include_directories(search_engine_tests PRIVATE
-        ${PROJECT_SOURCE_DIR}/include
-        ${PROJECT_SOURCE_DIR}/nlohmann_json/include
-        ${PROJECT_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/src
 )
 
 include(GoogleTest)
