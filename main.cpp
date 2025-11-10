@@ -1,24 +1,30 @@
 #include "ConverterJSON.h"
+#include "InvertedIndex.h"
+#include "SearchServer.h"
+#include <iostream>
 
 int main() {
-    try {
-        ConverterJSON converter;
+    ConverterJSON converter;
+    auto docs = converter.GetTextDocuments();
 
-        auto docs = converter.GetTextDocuments();
-        auto queries = converter.GetRequests();
-        int limit = converter.GetResponsesLimit();
+    InvertedIndex index;
+    index.UpdateDocumentBase(docs);
 
-        std::cout << "Loaded " << docs.size() << " documents\n";
-        std::cout << "Loaded " << queries.size() << " queries\n";
-        std::cout << "Response limit: " << limit << std::endl;
+    SearchServer server(index);
+    auto requests = converter.GetRequests();
 
-        std::vector<std::vector<std::pair<int, float>>> dummyAnswers = {
-            { {0, 0.9f}, {1, 0.7f} },
-            { },
-            { {2, 0.8f} }
-        };
-        converter.PutAnswers(dummyAnswers);
-    } catch (std::exception &ex) {
-        std::cerr << "Error: " << ex.what() << std::endl;
+    auto results = server.search(requests);
+
+    std::vector<std::vector<std::pair<int, float>>> formatted;
+    for (const auto& res : results) {
+        std::vector<std::pair<int, float>> oneReq;
+        for (const auto& r : res) {
+            oneReq.push_back({(int)r.doc_id, r.rank});
+        }
+        formatted.push_back(oneReq);
     }
+
+    converter.PutAnswers(formatted);
+
+    std::cout << "Search complete. Results written to answers.json\n"
 }
