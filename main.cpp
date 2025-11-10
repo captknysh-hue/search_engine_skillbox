@@ -26,5 +26,5 @@ int main() {
 
     converter.PutAnswers(formatted);
 
-    std::cout << "Search complete. Results written to answers.json\n"
+    std::cout << "Search complete. Results written to answers.json\n";
 }

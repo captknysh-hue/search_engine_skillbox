@@ -126,7 +126,6 @@ endif()
 ## create target and add include path
 ##
 add_library(${NLOHMANN_JSON_TARGET_NAME} INTERFACE
-        ../tests/test_main.cpp
         ../SearchServer.cpp
         ../SearchServer.h)
 add_library(${PROJECT_NAME}::${NLOHMANN_JSON_TARGET_NAME} ALIAS ${NLOHMANN_JSON_TARGET_NAME})

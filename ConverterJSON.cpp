@@ -2,7 +2,9 @@
 #include <fstream>
 #include <iostream>
 
-std::vectorr<std::string> ConverterJSON::GetTextDocuments() {
+ConverterJSON::ConverterJSON() = default;
+
+std::vector<std::string> ConverterJSON::GetTextDocuments() {
     std::ifstream file("confirg.json");
     json config;
     file >> config;
@@ -42,7 +44,7 @@ std::vector<std::string> ConverterJSON::GetRequests() {
     return reqs;
 }
 
-void ConverterJSON::PutAnswers(const std::vector<std::vector<std::pair<int, float>>& answers) {
+void ConverterJSON::PutAnswers(const std::vector<std::vector<std::pair<int, float>>>& answers) {
     json result;
     result["answers"] = json::object();
 

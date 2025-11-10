@@ -17,12 +17,12 @@ struct RelativeIndex {
 
 class SearchServer {
 public:
-    SearchServer(InvertedIndex& idx) : index(idx) { }
+    explicit SearchServer(InvertedIndex& idx) : index(idx) { }
 
     std::vector<std::vector<RelativeIndex>> search(const std::vector<std::string>& queries_input);
 
 private:
-    InvertedIndex index;
+    InvertedIndex& index;
 };
 
 #endif //SEARCH_ENGINE_SEARCHSERVER_H

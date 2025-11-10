@@ -9,15 +9,16 @@
 #include <map>
 #include <nlohmann/json.hpp>
 
+
 using json = nlohmann::json;
 
 class ConverterJSON {
 public:
     ConverterJSON();
     std::vector<std::string>GetTextDocuments();
-    int GetResponsesLimit();
+    int GetResponseLimit();
     std::vector<std::string> GetRequests();
-    void PutAnswers(const std::vector<std::vector<std::pair<int, float>>> &answers);
+    void PutAnswers(const std::vector<std::vector<std::pair<int, float>>>& answers);
 
 private:
     json configJSON;
