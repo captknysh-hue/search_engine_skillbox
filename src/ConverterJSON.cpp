@@ -1,6 +1,8 @@
 #include "../include/ConverterJSON.h"
 #include <fstream>
+#include <iomanip>
 #include <iostream>
+#include <filesystem>
 
 ConverterJSON::ConverterJSON() = default;
 
@@ -45,32 +47,38 @@ std::vector<std::string> ConverterJSON::GetRequests() {
 }
 
 void ConverterJSON::PutAnswers(const std::vector<std::vector<std::pair<int, float>>>& answers) {
-    json result;
-    result["answers"] = json::object();
+    nlohmann::json jAnswers;
 
     for (size_t i = 0; i < answers.size(); i++) {
-        json requestResult;
-        std::string key = "request" + std::to_string(i + 1);
+        nlohmann::json request;
+        request["request"] = "request" + std::to_string(i + 1);
 
         if (answers[i].empty()) {
-            requestResult["result"] = false;
+            request["result"] = false;
         } else {
-            requestResult["result"] = true;
-            requestResult["relevance"] = json::array();
+            request["result"] = true;
+            nlohmann::json relevance = nlohmann::json::array();
 
             for(const auto& [docId, rank] : answers[i]) {
-                json entry;
+                nlohmann::json entry;
                 entry["docId"] = docId;
                 entry["rank"] = rank;
-                requestResult["relevance"].push_back(entry);
+                relevance.push_back(entry);
             }
+            request["relevance"] = relevance;
         }
-        result["answers"][key] = requestResult;
+        jAnswers["answers"].push_back(request);
     }
 
     std::ofstream out("config/answers.json");
-    out << std::setw(4) << result;
+    if (!out.is_open()) {
+        std::cerr << "File was not opened for writing!" << std::endl;
+        return;
+    }
+    out << std::setw(4) << jAnswers;
     out.close();
+
+    std::cout << "Search results saved in answers.json file! " << std::endl;
 }
 
 

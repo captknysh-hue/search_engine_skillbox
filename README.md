@@ -1,5 +1,5 @@
 # search_engine_skillbox
-**Search Engine** - учебный проект на С++ для Skillbox, реализующий простую модель поиковой системы.
+**Search Engine** - учебный проект на С++ для Skillbox, реализующий простую модель поисковой системы.
 Программа считывает тексты документов, строит **инвертированный индекс** и позволяет выполнять поиск по этим документам с ранжированием результатов по **релевантности**.
 
 ---
@@ -21,18 +21,37 @@
 search_engine/
 │
 ├── CMakeLists.txt           # Конфигурация сборки проекта
-├── main.cpp                 # Точка входа программы
 │
-├── ConverterJSON.h/.cpp     # Работа с JSON-файлами (config.json, requests.json, answers.json)
-├── InvertedIndex.h/.cpp     # Реализация инвертированного индекса
-├── SearchServer.h/.cpp      # Алгоритм поиска и ранжирования результатов
+├── config                   # Рабочие файлы JSON
+│   ├── answers.json
+│   ├── config.json
+│   └── request.json
 │
-├── tests/                   # Тесты Google Test
-│   ├── test_inverted_index.cpp
-│   ├── test_search_server.cpp
-│   └── test_main.cpp
+├── include                  # Заголовочные файлы(.h)
+│   ├── ConverterJSON.h
+│   ├── InvertedIndex.h
+│   └── SeachServer.h
 │
-├── cmake-build-debug/       # Директория сборки (создаётся автоматически)
+├── resources                # Исходные текстовые документы
+│   ├── file001.txt
+│   ├── file002.txt
+│   └── file003.txt
+│
+├── src
+│   ├── CMakeList.txt         # Конфигурация сборки подпроекта
+│   ├── main.cpp              # Точка входа программы
+│   ├── ConverterJSON.cpp     # Реализация работы с JSON-файлами (config.json, requests.json, answers.json)
+│   ├── InvertedIndex.cpp     # Реализация алгоритма инвертированного индекса
+│   └── SearchServer.cpp      # Реализация алгоритма поиска и ранжирования результатов
+│
+├── tests/                    # Тесты Google Test
+│   ├── CMakeList.txt             # Конфигурация сборки подпроекта
+│   ├── test_inverted_index.cpp   # Тестирование алгоритма инвертированного индекса
+│   ├── test_search_server.cpp    # Тестирование алгоритма поиска и ранжирования результатов
+│   └── test_main.cpp             # Запуск всех тестов
+│
+├── cmake-build-debug/ # Директория сборки (создаётся автоматически)
+├── .gitignore
 └── README.md                # Этот файл
 ```
 
@@ -64,11 +83,13 @@ cmake --build .
 {
   "config": {
     "name": "SearchEngine",
-    "version": "1.0"
+    "version": "1.0",
+    "max_responses": 5
   },
   "files": [
     "resources/file001.txt",
-    "resources/file002.txt"
+    "resources/file002.txt",
+    "resources/file003.txt"
   ]
 }
 ```
@@ -125,6 +146,10 @@ cmake --build .
 Обрабатывает поисковые запросы, вычисляет **абсолютную** и **относительную** релевантность и сортирует результаты.
 
 ---
+
+## Многопоточность
+
+Обновление базы документов (InvertedIndex::UpdateDocumentBase) реализовано с использованием std::thread, что ускоряет индексацию при большом числе файлов.
 
 ## Пример работы
 
